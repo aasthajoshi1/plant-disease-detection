@@ -80,7 +80,7 @@ if app_mode == "Home":
         # Image with animation
         image_path = "home_page.png"  # Ensure the image path is correct
         st.markdown('<div class="image-container">', unsafe_allow_html=True)
-        st.image(image_path, use_container_width=True)
+        st.image(image_path, use_column_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
         # Write the rest of the page content
