@@ -1,6 +1,6 @@
 streamlit==1.33.0
-tensorflow==2.19.0
-keras==3.0.5
+tensorflow==2.11.0  # Downgraded TensorFlow version
+keras==3.0.5  # Keras 3.0.5 as requested
 numpy==1.26.4
 pillow==10.2.0
 matplotlib==3.8.3
