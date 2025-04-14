@@ -121,7 +121,7 @@ elif app_mode == "Disease Recognition":
 
         if test_image:
             image = Image.open(test_image)
-            st.image(image, caption="Uploaded Image", use_container_width=True)
+            st.image(image, caption="Uploaded Image")
 
         # Predict button
         if st.button("Predict Disease"):
