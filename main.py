@@ -1,10 +1,23 @@
-import streamlit as st # type: ignore
+import streamlit as st  # type: ignore
 import numpy as np
-import tensorflow as tf # type: ignore
+import tensorflow as tf  # type: ignore
 from PIL import Image
+import gdown
+import os
+
+# Function to download the model if not present
+def download_model():
+    model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'
+    output_path = 'trained_model_final.keras'
+
+    if not os.path.exists(output_path):
+        gdown.download(model_url, output_path, quiet=False)
+    else:
+        print("Model already downloaded.")
 
 # TensorFlow Model Prediction
 def model_prediction(test_image):
+    download_model()  # Ensure model is available
     model = tf.keras.models.load_model("trained_model_final.keras", compile=False)
     image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
