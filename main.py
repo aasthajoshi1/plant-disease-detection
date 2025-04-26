@@ -4,6 +4,7 @@ import tensorflow as tf  # type: ignore
 from PIL import Image
 import gdown
 import os
+import time
 
 # Function to download the model if not present
 def download_model():
@@ -11,9 +12,42 @@ def download_model():
     output_path = 'trained_model_final.keras'
 
     if not os.path.exists(output_path):
-        gdown.download(model_url, output_path, quiet=False)
+        st.write("Downloading model...")
+        try:
+            gdown.download(model_url, output_path, quiet=False)
+            st.write("Model downloaded successfully.")
+        except Exception as e:
+            st.error(f"Failed to download model: {e}")
+            return False
     else:
-        print("Model already downloaded.")
+        st.write("Model already downloaded.")
+    return True
+
+# TensorFlow Model Prediction
+def model_prediction(test_image):
+    if not download_model():  # Ensure model is available
+        return None, None
+
+    try:
+        # Load the model
+        model = tf.keras.models.load_model("trained_model_final.keras", compile=False)
+    except Exception as e:
+        st.error(f"Failed to load model: {e}")
+        return None, None
+
+    try:
+        # Process the image for prediction
+        image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
+        input_arr = tf.keras.preprocessing.image.img_to_array(image)
+        input_arr = np.array([input_arr])  # Convert to batch format
+        prediction = model.predict(input_arr)
+
+        # Get the prediction result
+        result_index = np.argmax(prediction)
+        return result_index, prediction
+    except Exception as e:
+        st.error(f"Failed to make a prediction: {e}")
+        return None, None
 
 # TensorFlow Model Prediction
 def model_prediction(test_image):
