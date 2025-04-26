@@ -15,8 +15,20 @@ def download_model():
     if not os.path.exists(output_path):
         st.write("Downloading model...")
         try:
-            gdown.download(model_url, output_path, quiet=False)
-            st.write("Model downloaded successfully.")
+            # Retry download in case of temporary issues
+            retries = 3
+            for i in range(retries):
+                try:
+                    gdown.download(model_url, output_path, quiet=False)
+                    st.write("Model downloaded successfully.")
+                    break
+                except Exception as e:
+                    if i == retries - 1:
+                        st.error(f"Failed to download model after {retries} attempts: {e}")
+                        return False
+                    else:
+                        st.write(f"Retrying download... Attempt {i + 1} of {retries}")
+                        time.sleep(5)
         except Exception as e:
             st.error(f"Failed to download model: {e}")
             return False
@@ -63,6 +75,7 @@ def model_prediction(test_image):
     except Exception as e:
         st.error(f"Failed to make a prediction: {e}")
         return None, None
+
 
 
 # TensorFlow Model Prediction
