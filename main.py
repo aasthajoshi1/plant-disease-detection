@@ -11,6 +11,7 @@ def download_model():
     model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'
     output_path = 'trained_model_final.keras'
 
+    # Check if the model already exists
     if not os.path.exists(output_path):
         st.write("Downloading model...")
         try:
@@ -21,6 +22,7 @@ def download_model():
             return False
     else:
         st.write("Model already downloaded.")
+    
     return True
 
 # TensorFlow Model Prediction
@@ -28,26 +30,40 @@ def model_prediction(test_image):
     if not download_model():  # Ensure model is available
         return None, None
 
+    model_path = "trained_model_final.keras"
+    # Check if model file exists before attempting to load
+    if not os.path.exists(model_path):
+        st.error(f"Model file {model_path} not found. Please check the download.")
+        return None, None
+
     try:
         # Load the model
-        model = tf.keras.models.load_model("trained_model_final.keras", compile=False)
+        st.write("Loading model...")
+        model = tf.keras.models.load_model(model_path, compile=False)
+        st.write("Model loaded successfully.")
     except Exception as e:
         st.error(f"Failed to load model: {e}")
         return None, None
 
     try:
         # Process the image for prediction
+        st.write("Processing image for prediction...")
         image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
         input_arr = tf.keras.preprocessing.image.img_to_array(image)
         input_arr = np.array([input_arr])  # Convert to batch format
-        prediction = model.predict(input_arr)
 
+        # Make a prediction
+        st.write("Making prediction...")
+        prediction = model.predict(input_arr)
+        
         # Get the prediction result
         result_index = np.argmax(prediction)
+        st.write(f"Prediction result index: {result_index}")
         return result_index, prediction
     except Exception as e:
         st.error(f"Failed to make a prediction: {e}")
         return None, None
+
 
 # TensorFlow Model Prediction
 def model_prediction(test_image):
