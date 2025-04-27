@@ -2,16 +2,16 @@ import streamlit as st  # type: ignore
 import numpy as np
 import tensorflow as tf  # type: ignore
 from PIL import Image
-import gdown
 import os
 import time
+import requests
 
 # Global variable to cache the loaded model
 loaded_model = None
 
 # Function to download the model if not present
 def download_model():
-    model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'
+    model_url = 'https://www.dropbox.com/s/your_dropbox_file_id/trained_model_final.keras?dl=1'  # Updated Dropbox URL
     output_path = 'trained_model_final.keras'
 
     if not os.path.exists(output_path):
@@ -19,10 +19,12 @@ def download_model():
             retries = 3
             for i in range(retries):
                 try:
-                    # Download the model
-                    gdown.download(model_url, output_path, quiet=False)
+                    # Make a direct download link for Dropbox
+                    response = requests.get(model_url)
+                    with open(output_path, 'wb') as f:
+                        f.write(response.content)
 
-                    # Check if the file is downloaded correctly
+                    # Optional: Check file size to detect invalid downloads
                     if os.path.getsize(output_path) < 1_000_000:  # Less than 1MB suspicious
                         st.error("Downloaded file is too small. Download may have failed!")
                         return False
@@ -37,7 +39,6 @@ def download_model():
                         st.warning(f"Retrying download... Attempt {i + 1} of {retries}")
                         time.sleep(5)
     return True
-
 
 # Function to load the model (only once)
 def load_model():
@@ -61,8 +62,7 @@ def load_model():
             return None
     return loaded_model
 
-
-# Function for TensorFlow Model Prediction
+# TensorFlow Model Prediction
 def model_prediction(test_image):
     model = load_model()
     if model is None:
@@ -83,6 +83,8 @@ def model_prediction(test_image):
     except Exception as e:
         st.error(f"Failed to make a prediction: {e}")
         return None, None
+
+
 
 # Solutions Dictionary (disease -> solution)
 solutions = {
