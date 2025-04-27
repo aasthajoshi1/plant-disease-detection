@@ -91,9 +91,7 @@ def model_prediction(test_image):
             # Predict the class of the input image
             prediction = model.predict(input_arr)
             
-            # Debugging lines to check the prediction
-            st.write("Prediction shape:", prediction.shape)
-            st.write("Prediction array:", prediction)
+      
 
             if prediction is not None and prediction.size > 0:
                 # Ensure prediction is a 1D array and valid
