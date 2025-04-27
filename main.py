@@ -11,23 +11,23 @@ loaded_model = None
 
 # Function to download the model if not present
 def download_model():
-    model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'  # Update with your file's correct ID
+    model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'
     output_path = 'trained_model_final.keras'
 
+    # Check if model already exists, if not, download
     if not os.path.exists(output_path):
         with st.spinner("Downloading model..."):
             retries = 3
             for i in range(retries):
                 try:
-                    # Download the model from Google Drive using gdown
                     gdown.download(model_url, output_path, quiet=False, fuzzy=True)
 
-                    # Optional: Check file size to detect invalid downloads (1MB threshold)
+                    # Optional: Check file size to detect invalid downloads
                     if os.path.getsize(output_path) < 1_000_000:  # Less than 1MB suspicious
                         st.error("Downloaded file is too small. Download may have failed!")
                         return False
 
-                    st.success("Model downloaded successfully.")
+                    st.success(f"Model downloaded successfully at: {os.path.abspath(output_path)}")
                     break
                 except Exception as e:
                     if i == retries - 1:
@@ -36,7 +36,13 @@ def download_model():
                     else:
                         st.warning(f"Retrying download... Attempt {i + 1} of {retries}")
                         time.sleep(5)
+
+    # Print current directory to ensure it's downloading to the correct place
+    st.write("Current Directory:", os.getcwd())
+    st.write("Model file exists:", os.path.exists(output_path))
+
     return True
+
 
 # Function to load the model (only once)
 def load_model():
@@ -44,18 +50,22 @@ def load_model():
     model_path = "trained_model_final.keras"
     
     if loaded_model is None:
+        # Ensure the model is downloaded before loading
         if not os.path.exists(model_path):
             if not download_model():
                 return None
+
         try:
             with st.spinner("Loading model..."):
-                # Load the trained model from the .keras file
+                # Print the path and check if it's accessible
+                st.write("Loading model from path:", model_path)
                 loaded_model = tf.keras.models.load_model(model_path, compile=False)
                 st.success("Model loaded successfully.")
         except Exception as e:
             st.error(f"Failed to load model: {e}")
             return None
     return loaded_model
+
 
 # TensorFlow Model Prediction
 def model_prediction(test_image):
