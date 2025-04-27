@@ -14,20 +14,20 @@ def download_model():
     model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'
     output_path = 'trained_model_final.keras'
 
-    # Check if model already exists, if not, download
     if not os.path.exists(output_path):
         with st.spinner("Downloading model..."):
             retries = 3
             for i in range(retries):
                 try:
-                    gdown.download('https://drive.google.com/uc?id=FILE_ID', 'trained_model_final.keras', quiet=False)
+                    # Use the correct file ID from your model_url
+                    gdown.download(model_url, output_path, quiet=False)
 
                     # Optional: Check file size to detect invalid downloads
                     if os.path.getsize(output_path) < 1_000_000:  # Less than 1MB suspicious
                         st.error("Downloaded file is too small. Download may have failed!")
                         return False
 
-                    st.success(f"Model downloaded successfully at: {os.path.abspath(output_path)}")
+                    st.success("Model downloaded successfully.")
                     break
                 except Exception as e:
                     if i == retries - 1:
@@ -36,11 +36,6 @@ def download_model():
                     else:
                         st.warning(f"Retrying download... Attempt {i + 1} of {retries}")
                         time.sleep(5)
-
-    # Print current directory to ensure it's downloading to the correct place
-    st.write("Current Directory:", os.getcwd())
-    st.write("Model file exists:", os.path.exists(output_path))
-
     return True
 
 
