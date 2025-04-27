@@ -97,10 +97,12 @@ def model_prediction(test_image):
 
             if prediction is not None and prediction.size > 0:
                 # Ensure prediction is a 1D array and valid
-                result_index = np.argmax(prediction, axis=-1)
+                result_index = np.argmax(prediction, axis=-1)[0]  # Get the actual result index
                 confidence = np.max(prediction) * 100  # Convert to percentage
-                st.success(f"Prediction completed. Result index: {result_index} with {confidence:.2f}% confidence.")
-                return result_index, prediction
+                disease_name = class_name[result_index]  # Map index to disease name
+
+                st.success(f"Prediction completed. Disease: {disease_name} with {confidence:.2f}% confidence.")
+                return disease_name, confidence
             else:
                 st.error("Prediction is empty or invalid.")
                 return None, None
