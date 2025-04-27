@@ -90,16 +90,24 @@ def model_prediction(test_image):
 
             # Predict the class of the input image
             prediction = model.predict(input_arr)
-            result_index = np.argmax(prediction)
+            
+            # Debugging lines to check the prediction
+            st.write("Prediction shape:", prediction.shape)
+            st.write("Prediction array:", prediction)
 
-            # Get the class name using the result_index
-            predicted_class = class_name[result_index]
-
-            st.success(f"Prediction completed. Result index: {result_index}, Class: {predicted_class}")
-            return result_index, predicted_class
+            if prediction is not None and prediction.size > 0:
+                # Ensure prediction is a 1D array and valid
+                result_index = np.argmax(prediction, axis=-1)
+                confidence = np.max(prediction) * 100  # Convert to percentage
+                st.success(f"Prediction completed. Result index: {result_index} with {confidence:.2f}% confidence.")
+                return result_index, prediction
+            else:
+                st.error("Prediction is empty or invalid.")
+                return None, None
     except Exception as e:
         st.error(f"Failed to make a prediction: {e}")
         return None, None
+
 
 
 
