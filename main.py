@@ -24,7 +24,7 @@ class_name = [
 
 # Function to download the model if not present
 def download_model():
-    model_url = 'https://www.dropbox.com/s/your_dropbox_file_id/trained_model_final.keras?dl=1'  # Updated Dropbox URL
+    model_url = 'https://www.dropbox.com/scl/fo/3xjidxfqu0qmk44hf6dl8/ADWNJ-FTn6njXBsr2aEjmZ0?rlkey=pm9783zqu9mgds3gxsvo0eiyk&st=7jymmjpq&dl=1'
     output_path = 'trained_model_final.keras'
 
     if not os.path.exists(output_path):
