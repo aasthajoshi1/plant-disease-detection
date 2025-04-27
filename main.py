@@ -6,72 +6,65 @@ import gdown
 import os
 import time
 
+# Global variable to cache the loaded model
+loaded_model = None
+
 # Function to download the model if not present
 def download_model():
     model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'
     output_path = 'trained_model_final.keras'
 
-    # Check if the model already exists
     if not os.path.exists(output_path):
-        st.write("Downloading model...")
-        try:
-            # Retry download in case of temporary issues
+        with st.spinner("Downloading model..."):
             retries = 3
             for i in range(retries):
                 try:
                     gdown.download(model_url, output_path, quiet=False)
-                    st.write("Model downloaded successfully.")
+                    st.success("Model downloaded successfully.")
                     break
                 except Exception as e:
                     if i == retries - 1:
                         st.error(f"Failed to download model after {retries} attempts: {e}")
                         return False
                     else:
-                        st.write(f"Retrying download... Attempt {i + 1} of {retries}")
+                        st.warning(f"Retrying download... Attempt {i + 1} of {retries}")
                         time.sleep(5)
-        except Exception as e:
-            st.error(f"Failed to download model: {e}")
-            return False
-    else:
-        st.write("Model already downloaded.")
-    
     return True
+
+# Function to load the model (only once)
+def load_model():
+    global loaded_model
+    model_path = "trained_model_final.keras"
+    
+    if loaded_model is None:
+        if not os.path.exists(model_path):
+            if not download_model():
+                return None
+        try:
+            with st.spinner("Loading model..."):
+                loaded_model = tf.keras.models.load_model(model_path, compile=False)
+                st.success("Model loaded successfully.")
+        except Exception as e:
+            st.error(f"Failed to load model: {e}")
+            return None
+    return loaded_model
 
 # TensorFlow Model Prediction
 def model_prediction(test_image):
-    if not download_model():  # Ensure model is available
-        return None, None
-
-    model_path = "trained_model_final.keras"
-    # Check if model file exists before attempting to load
-    if not os.path.exists(model_path):
-        st.error(f"Model file {model_path} not found. Please check the download.")
+    model = load_model()
+    if model is None:
         return None, None
 
     try:
-        # Load the model
-        st.write("Loading model...")
-        model = tf.keras.models.load_model(model_path, compile=False)
-        st.write("Model loaded successfully.")
-    except Exception as e:
-        st.error(f"Failed to load model: {e}")
-        return None, None
+        with st.spinner("Processing image and making prediction..."):
+            image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
+            input_arr = tf.keras.preprocessing.image.img_to_array(image)
+            input_arr = np.array([input_arr])  # Convert to batch format
 
-    try:
-        # Process the image for prediction
-        st.write("Processing image for prediction...")
-        image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
-        input_arr = tf.keras.preprocessing.image.img_to_array(image)
-        input_arr = np.array([input_arr])  # Convert to batch format
-
-        # Make a prediction
-        st.write("Making prediction...")
-        prediction = model.predict(input_arr)
-        
-        # Get the prediction result
-        result_index = np.argmax(prediction)
-        st.write(f"Prediction result index: {result_index}")
-        return result_index, prediction
+            prediction = model.predict(input_arr)
+            result_index = np.argmax(prediction)
+            st.success(f"Prediction completed. Result index: {result_index}")
+            return result_index, prediction
     except Exception as e:
         st.error(f"Failed to make a prediction: {e}")
         return None, None
