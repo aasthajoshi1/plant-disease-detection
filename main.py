@@ -19,7 +19,13 @@ def download_model():
             retries = 3
             for i in range(retries):
                 try:
-                    gdown.download(model_url, output_path, quiet=False)
+                    gdown.download(model_url, output_path, quiet=False, fuzzy=True)
+
+                    # Optional: Check file size to detect invalid downloads
+                    if os.path.getsize(output_path) < 1_000_000:  # Less than 1MB suspicious
+                        st.error("Downloaded file is too small. Download may have failed!")
+                        return False
+
                     st.success("Model downloaded successfully.")
                     break
                 except Exception as e:
@@ -59,7 +65,7 @@ def model_prediction(test_image):
         with st.spinner("Processing image and making prediction..."):
             image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
             input_arr = tf.keras.preprocessing.image.img_to_array(image)
-            input_arr = np.array([input_arr])  # Convert to batch format
+            input_arr = np.expand_dims(input_arr, axis=0)  # Convert to batch format
 
             prediction = model.predict(input_arr)
             result_index = np.argmax(prediction)
