@@ -11,7 +11,7 @@ loaded_model = None
 
 # Function to download the model if not present
 def download_model():
-    model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'
+    model_url = 'https://drive.google.com/uc?id=1QgT_lSlOSRQ_4SGl1bsW4wrukXAN0jBz'  # Update with your file's correct ID
     output_path = 'trained_model_final.keras'
 
     if not os.path.exists(output_path):
@@ -19,9 +19,10 @@ def download_model():
             retries = 3
             for i in range(retries):
                 try:
+                    # Download the model from Google Drive using gdown
                     gdown.download(model_url, output_path, quiet=False, fuzzy=True)
 
-                    # Optional: Check file size to detect invalid downloads
+                    # Optional: Check file size to detect invalid downloads (1MB threshold)
                     if os.path.getsize(output_path) < 1_000_000:  # Less than 1MB suspicious
                         st.error("Downloaded file is too small. Download may have failed!")
                         return False
@@ -48,6 +49,7 @@ def load_model():
                 return None
         try:
             with st.spinner("Loading model..."):
+                # Load the trained model from the .keras file
                 loaded_model = tf.keras.models.load_model(model_path, compile=False)
                 st.success("Model loaded successfully.")
         except Exception as e:
@@ -63,10 +65,12 @@ def model_prediction(test_image):
 
     try:
         with st.spinner("Processing image and making prediction..."):
+            # Load image and preprocess it
             image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
             input_arr = tf.keras.preprocessing.image.img_to_array(image)
             input_arr = np.expand_dims(input_arr, axis=0)  # Convert to batch format
 
+            # Predict the class of the input image
             prediction = model.predict(input_arr)
             result_index = np.argmax(prediction)
             st.success(f"Prediction completed. Result index: {result_index}")
