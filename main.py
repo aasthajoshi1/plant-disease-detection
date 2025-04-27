@@ -20,7 +20,7 @@ def download_model():
             retries = 3
             for i in range(retries):
                 try:
-                    gdown.download(model_url, output_path, quiet=False, fuzzy=True)
+                    gdown.download('https://drive.google.com/uc?id=FILE_ID', 'trained_model_final.keras', quiet=False)
 
                     # Optional: Check file size to detect invalid downloads
                     if os.path.getsize(output_path) < 1_000_000:  # Less than 1MB suspicious
