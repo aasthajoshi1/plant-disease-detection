@@ -19,7 +19,7 @@ def download_model():
             retries = 3
             for i in range(retries):
                 try:
-                    # Use the correct file ID from your model_url
+                    # Download the model using gdown
                     gdown.download(model_url, output_path, quiet=False)
 
                     # Optional: Check file size to detect invalid downloads
@@ -62,7 +62,7 @@ def load_model():
     return loaded_model
 
 
-# TensorFlow Model Prediction
+# Function for TensorFlow Model Prediction
 def model_prediction(test_image):
     model = load_model()
     if model is None:
@@ -83,19 +83,6 @@ def model_prediction(test_image):
     except Exception as e:
         st.error(f"Failed to make a prediction: {e}")
         return None, None
-
-
-
-# TensorFlow Model Prediction
-def model_prediction(test_image):
-    download_model()  # Ensure model is available
-    model = tf.keras.models.load_model("trained_model_final.keras", compile=False)
-    image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
-    input_arr = tf.keras.preprocessing.image.img_to_array(image)
-    input_arr = np.array([input_arr])
-    prediction = model.predict(input_arr)
-    result_index = np.argmax(prediction)
-    return result_index, prediction
 
 # Solutions Dictionary (disease -> solution)
 solutions = {
