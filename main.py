@@ -19,10 +19,10 @@ def download_model():
             retries = 3
             for i in range(retries):
                 try:
-                    # Download the model using gdown
+                    # Download the model
                     gdown.download(model_url, output_path, quiet=False)
 
-                    # Optional: Check file size to detect invalid downloads
+                    # Check if the file is downloaded correctly
                     if os.path.getsize(output_path) < 1_000_000:  # Less than 1MB suspicious
                         st.error("Downloaded file is too small. Download may have failed!")
                         return False
