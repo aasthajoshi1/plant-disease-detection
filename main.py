@@ -245,10 +245,6 @@ elif app_mode == "Disease Recognition":
                 solution = solutions.get(disease, "No solution available for this disease.")
                 st.write(f"*Solution:* {solution}")
 
-                # Optionally, show additional details (confidence, etc.)
-                confidence = np.max(prediction) * 100  # Convert to percentage
-                st.write(f"*Confidence:* {confidence:.2f}%")
-
 #FAQs
 elif app_mode == "FAQs":
     st.header("Frequently Asked Questions (FAQs)")
