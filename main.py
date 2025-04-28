@@ -238,8 +238,7 @@ elif app_mode == "Disease Recognition":
                             'Tomato__Target_Spot', 'Tomato_Tomato_Yellow_Leaf_Curl_Virus', 'Tomato__Tomato_mosaic_virus',
                             'Tomato___healthy']
                 
-                result_index = int(result_index)
-                disease = class_name[result_index]
+                disease = result_index
                 st.success(f"Model predicts: *{disease}*")
 
                 # Show relevant solution
